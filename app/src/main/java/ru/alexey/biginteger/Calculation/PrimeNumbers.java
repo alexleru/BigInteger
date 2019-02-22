@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class PrimeNumbers {
 
-
     private ArrayList<BigInteger> bigIntegerArrayList;
     private BigInteger checkNumber;
     private final BigInteger BigTWO = new BigInteger("2");
@@ -13,14 +12,17 @@ public class PrimeNumbers {
         this.bigIntegerArrayList = bigIntegerArrayList;
     }
 
+    synchronized public void setBigIntegerArrayList(ArrayList<BigInteger> bigIntegerArrayList) {
+        this.bigIntegerArrayList = bigIntegerArrayList;
+    }
 
-    public ArrayList<BigInteger> getBigIntegerArrayList() {
+    synchronized public ArrayList<BigInteger> getBigIntegerArrayList() {
         return bigIntegerArrayList;
     }
 
-    public void loop(){
+    synchronized public void loop(){
         checkNumber = max(bigIntegerArrayList);
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 5; i++){
             System.out.print(i + " ");
             checkNumber = checkNumber.add(BigTWO);
             checkNumber(bigIntegerArrayList, checkNumber);

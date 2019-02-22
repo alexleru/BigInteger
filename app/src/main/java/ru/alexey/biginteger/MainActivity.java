@@ -31,11 +31,11 @@ public class MainActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scroll);
 
         bigIntegers = new ArrayList<>();
-        BigInteger bigInteger = new BigInteger("3");
-        bigIntegers.add(bigInteger);
+        bigIntegers.add(new BigInteger("3"));
         primeNumbers = new PrimeNumbers(bigIntegers);
 
         controllerDataBase = new ControllerDataBase();
+
 
     }
 
@@ -44,9 +44,20 @@ public class MainActivity extends AppCompatActivity {
         bigIntegers = null;
         textView.setText(null);
         textView.append("get Data\n");
-        bigIntegers = controllerDataBase.getAllBigIntegers();
-        for (BigInteger bigInteger : bigIntegers){ // DRY 2
-             textView.append("\n" + bigInteger.toString());
+
+        if(thread == null || !thread.isAlive()) {
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bigIntegers = controllerDataBase.getAllBigIntegers();
+                    primeNumbers.setBigIntegerArrayList(bigIntegers);
+                }
+            });
+            thread.start();
+        }else {
+            textView.setTextColor(Color.RED);
+            textView.append("waiting gor calculate");
+            textView.setTextColor(Color.BLACK);
         }
     }
 
@@ -55,10 +66,7 @@ public class MainActivity extends AppCompatActivity {
         textView.append("send Data\n");
         if(thread == null || !thread.isAlive()){
             bigIntegers = primeNumbers.getBigIntegerArrayList();
-            for (BigInteger big : bigIntegers) {
-                textView.append("\n" + big.toString());
-
-            }
+            setTextOfPrimeList(bigIntegers, Color.GREEN);
             scrollDown();
             new Thread(new Runnable() {
                 @Override
@@ -68,18 +76,20 @@ public class MainActivity extends AppCompatActivity {
             }).start();
 
         }else {
-            textView.append("waiting");
+            textView.setTextColor(Color.GREEN);
+            textView.append("waiting for insert");
+            textView.setTextColor(Color.BLACK);
+
         }
     }
 
     public void onClickCalculate(View view) {
-
-        //вынести в отедльный класс
         if(thread == null || !thread.isAlive()) {
             thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     primeNumbers.loop();
+                    bigIntegers = primeNumbers.getBigIntegerArrayList();
                 }
             });
             thread.start();
@@ -91,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickStop(View view) {
-
+        setTextOfPrimeList(bigIntegers, Color.RED);
+        scrollDown();
     }
 
     private void scrollDown(){
@@ -102,4 +113,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    synchronized private void setTextOfPrimeList(ArrayList<BigInteger> bigIntegers, int color){
+        textView.setTextColor(Color.RED);
+        for (BigInteger big : bigIntegers) {
+            textView.append("\n" + big.toString());
+        }
+        textView.setTextColor(Color.BLACK);
+    }
+
 }
