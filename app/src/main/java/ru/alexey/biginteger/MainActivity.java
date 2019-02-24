@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     synchronized private void setTextOfPrimeList(ArrayList<BigInteger> bigIntegers, int color){
-        textView.setTextColor(Color.RED);
+        textView.setTextColor(color);
         for (BigInteger big : bigIntegers) {
             textView.append("\n" + big.toString());
         }
